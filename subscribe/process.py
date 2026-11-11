@@ -26,6 +26,7 @@ from logger import logger
 from workflow import TaskConfig
 
 import clash
+import filter_protocols
 import subconverter
 
 PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -256,6 +257,9 @@ def aggregate(args: argparse.Namespace) -> None:
                 digits=max(1, group.regularize.digits),
                 score=group.regularize.score,
             )
+
+        # drop unencrypted protocols (http / socks5) before converting and pushing
+        nochecks = filter_protocols.drop_unencrypted(nochecks)
 
         source_file, data = "config.yaml", {"proxies": nochecks}
         filepath = os.path.join(PATH, "subconverter", source_file)
